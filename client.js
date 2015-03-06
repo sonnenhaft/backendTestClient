@@ -1,11 +1,12 @@
 
 codeTest = {
-	config: {},
+	config: {
+		server: '127.0.0.1:8080'
+	},
 	nickName: 'person1',
 	channel: 'defaultChannel',
 	client: null	
 };
-codeTest.config.server = 'localhost:8080';
 
 jQuery(document).ready(init);
 
@@ -25,7 +26,16 @@ function init() {
 		'click',
 		joinChannel
 	);
-	codeTest.client = setupSocket();
+	jQuery('#connect').on(
+		'click',
+		function(e) {
+			if (typeof codeTest.client !== null) {
+				delete codeTest.client;
+			}
+			codeTest.config.server = jQuery('#serverUrl').val();
+			codeTest.client = setupSocket();
+		}
+	);
 	drawMessage({ author:'system', channel: codeTest.channel, text: 'welcome to the test', timestamp: new Date().toLocaleTimeString() });
 };
 
