@@ -1,0 +1,6 @@
+{
+	"name": "cool-chat",
+	"dependencies": {
+		"r2d2": "https://github.com/Klab-Berlin/r2d2"
+	}
+}
