@@ -48,7 +48,7 @@ socketServer('example', function (connection) {
             // this was the easiest way to sync clients that may belong to different servers
             redis.publish(currentChannel, message);
 
-            // Here we add element to "array" with channel name inside the reddis
+            // Here we add element to "array" with channel name inside the redis
             redis.lpush(currentChannel, message);
         }
     }).on('error', function (err) {
