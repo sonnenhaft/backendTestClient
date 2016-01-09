@@ -25,8 +25,11 @@
             return codeTest.nickName;
         });
 
+        var oldChannel;
         $('#joinChannel').click(function joinChannel() {
             var channel = $('#channel').val();
+            //if (channel === oldChannel){return};
+            oldChannel = channel;
             $('#messages').empty();
             codeTest.channel = channel;
             drawMessage({
@@ -34,8 +37,17 @@
                 channel: codeTest.channel,
                 text: 'welcome to a new channel (' + channel + '), ' + codeTest.nickName, timestamp: new Date().toLocaleTimeString()
             });
+            sendMsg(null, true);
             return codeTest.channel;
         });
+
+        var port = location.hash;
+        if (port) {
+            port = port.replace('#', '');
+        }  else {
+            port = 2020;
+        }
+        $('#serverUrl').val('127.0.0.1:' + port)
 
         $('#connect').click(function () {
                 if (typeof codeTest.client !== null) {
@@ -48,11 +60,12 @@
         $('#connect').click();
     }));
 
-    function sendMsg(text) {
+    function sendMsg(text, switchChannel) {
         var data = {
             author: codeTest.nickName,
             channel: codeTest.channel,
-            text: text
+            text: text,
+            switchChannel: switchChannel
         };
         drawMessage({author: 'YOU', channel: data.channel, text: data.text, timestamp: new Date().toLocaleTimeString()});
         return send2server('msg', data);
@@ -72,7 +85,6 @@
     }
 
     function setupSocket() {
-        var firstTime = true;
         try {
             var testSocket = new Socket(codeTest.config.server, {autoReconnect: true});
             testSocket.on('reconnect', function (msg, e) {
@@ -90,14 +102,15 @@
             testSocket.on('open', function (e) {
                 if (opened) {return}
                 opened = true;
+                $('#joinChannel').click();
                 $('#wsstatus').text(Date.now() + ' connection open');
                 function draw(a) {
                     drawMessage({author: a.author, channel: a.channel, text: a.text, timestamp: new Date(a.timestamp).toLocaleTimeString()});
                 }
 
                 testSocket.on('message', function (msg, e) {
-                    if (firstTime) {
-                        firstTime = false;
+                    console.log(msg)
+                    if (Array.isArray(msg)) {
                         msg.reverse().forEach(function (i) {
                             draw(JSON.parse(i).action.data[0]);
                         });
