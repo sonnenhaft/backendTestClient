@@ -19,7 +19,6 @@ socketServer('example', function (connection) {
             sub.unsubscribe(currentChannel);
         }
         currentChannel = channel;
-        console.log(channel)
         redis.lrange(currentChannel, 0, -1, function (err, reply) {
             console.log(reply)
             connection.send(JSON.stringify(reply));
@@ -30,6 +29,9 @@ socketServer('example', function (connection) {
     connection.on('open', function (id) {
         currentId = id;
         sub.on('message', function (channel, message) {
+            // using this pub sub, I'm synchronizing data between clients of same channel
+            // as because it is on redis side, we don't care number of servers, that are connected
+            // to reddis (ofcourse we exclude reddis connections limitations in here)
             var messageID = JSON.parse(message).id;
             if (messageID !== id) {
                 return connection.send(message);
@@ -43,7 +45,11 @@ socketServer('example', function (connection) {
         updateChannel(data.channel);
         if (data.text) {
             message = JSON.stringify(message);
+            // Here we are publishing event with channel name
+            // this was the easiest way to sync clients that may belong to different servers
             redis.publish(currentChannel, message);
+
+            // Here we add element to "array" with channel name inside the reddis
             redis.lpush(currentChannel, message);
         }
     }).on('error', function (err) {

@@ -40,3 +40,10 @@ No redis necessary to be installed on your local machine, I have windows machine
 7. Mention that first client was not updated (as expected)
 8. Switch channel in first client to equal second client.
 9. Mention that message that we sent in second client now is available in first client.
+
+### How long it took me to prepare this code?
+1. 1-2 hrs to configure environment, including remote redis
+2. 2-3 hrs to configure single server to synchronize messages between clients.
+3. 1-2hrs cost me to understand that we need pub/sub on redis side and to find pub/sub for reddis.
+4. 1-2hrs to prepare readme
+5. x hrs (not sure if I work right now on fixing the code) - fixes, addind features like expiry date for the messages - not complete
