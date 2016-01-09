@@ -20,7 +20,6 @@ socketServer('example', function (connection) {
         }
         currentChannel = channel;
         redis.lrange(currentChannel, 0, -1, function (err, reply) {
-            console.log(reply)
             connection.send(JSON.stringify(reply));
         });
         sub.subscribe(currentChannel);
